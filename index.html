@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head> 
+    <title>搶音符大作戰</title>
+    <link rel="icon" href="images/note1.png">
+    <meta content="Bay;搶音符大作戰">
+    <meta charset="utf8">
+    <link rel="stylesheet"href="CSS_PiKing.css">
+    <meta name="viewport" content="width=device-width, initial-scale1,user-scalab=no">
+</head>
+<script src="JavaScript_Functions_PiKing.js"></script>
+<body onload="StartGame()">
+    <button id = "restart" onclick="refresh()" style="font-size:20px;font-family:Consolas;position: fixed; top: 243px; left: 290px;display:none;">Restart</button>
+    <button id = "next" onclick="next()" style="font-size:20px;font-family:Consolas;position: fixed; top: 200px; left: 300px;">Next</button>
+    <script>
+        //遊戲空間轉換設定
+        var room = 0;
+        var audio = new Audio("sounds/gold.mp3");
+        var audio2 = new Audio("sounds/enemy.mp3");
+        function next()
+        {
+            if(room==0)
+            {
+                room = 1;
+                document.getElementById('next').style.display="none";
+            }
+        }
+        //遊戲初始物品設定
+        function StartGame()
+        {
+            GameArea.start(660,280,10);
+            Background = new object(700,280,"images/background.jpg",0,0,'image');
+            Player = new object(60,60,"images/piano_left.png",100,200,"image");
+            Score=new object("30px","consolas","black",265,40,"text");
+            GameArea.newscore=0;
+            GameArea.timer = 0
+            Gold = [];
+            Gold1 = [];
+            Gold2 = [];
+            Enemy = [];
+            Enemy1 = [];
+            Enemy2 = [];
+            Enemy3 = [];
+            lobbytext = new object('50px','consolas','black',170,100,'text');
+            leftbutton = new object(280,280,"./images/leftbutton.png",1,1,"image");
+            rightbutton = new object(280,280,"./images/rightbutton.png",380,1,"image");
+        }
+        //遊戲不斷執行設定
+        function LoopGame()
+        {
+            if(room==0)
+            {
+                GameArea.clear();
+                Background.newShow();
+                lobbytext.text = "搶音符大作戰";
+                lobbytext.newShow();
+            }
+            else
+            {
+                // 碰撞事件
+                for( i = 0 ; i < Gold.length; i+=1)
+                {
+                    if(Player.collision(Gold[i]))
+                    {
+                        Gold[i].width = 0;
+                        Gold[i].height = 0;
+                        Gold[i].y = 350;
+                        GameArea.newscore += 1;
+                        audio.play();
+                    }
+                }
+                for( i = 0 ; i < Gold1.length; i+=1)
+                {
+                    if(Player.collision(Gold1[i]))
+                    {
+                        Gold1[i].width = 0;
+                        Gold1[i].height = 0;
+                        Gold1[i].y = 350;
+                        GameArea.newscore += 3;
+                        audio.play();
+                    }
+                }
+                for( i = 0 ; i < Gold2.length; i+=1)
+                {
+                    if(Player.collision(Gold2[i]))
+                    {
+                        Gold2[i].width = 0;
+                        Gold2[i].height = 0;
+                        Gold2[i].y = 350;
+                        GameArea.newscore += 5;
+                        audio.play();
+                    }
+                }
+                for( i = 0 ; i < Enemy.length; i+=1)
+                {
+                    if(Player.collision(Enemy[i]))
+                    {
+                        Enemy[i].width = 0;
+                        Enemy[i].height = 0;
+                        Enemy[i].y = 350;
+                        GameArea.newscore -= 1;
+                        audio2.play();
+                    }
+                }
+                for( i = 0 ; i < Enemy1.length; i+=1)
+                {
+                    if(Player.collision(Enemy1[i]))
+                    {
+                        Enemy1[i].width = 0;
+                        Enemy1[i].height = 0;
+                        Enemy1[i].y = 350;
+                        GameArea.newscore -= 2;
+                        audio2.play();
+                    }
+                }
+                for( i = 0 ; i < Enemy2.length; i+=1)
+                {
+                    if(Player.collision(Enemy2[i]))
+                    {
+                        Enemy2[i].width = 0;
+                        Enemy2[i].height = 0;
+                        Enemy2[i].y = 350;
+                        GameArea.newscore -= 6;
+                        audio2.play();
+                    }
+                }
+                for( i = 0 ; i < Enemy3.length; i+=1)
+                {
+                    if(Player.collision(Enemy3[i]))
+                    {
+                        audio2.play();
+                        GameArea.stop();
+                        document.getElementById("restart").style.display="";
+                        return;
+                    }
+                }
+                GameArea.clear();
+                Background.newShow();
+                leftbutton.newShow();
+                rightbutton.newShow();
+                if (GameArea.key_is_pressed && GameArea.key_is_pressed[37]){move(Player,"left",3);Player.image.src="images/piano_left.png";}
+                if (GameArea.key_is_pressed && GameArea.key_is_pressed[39]){move(Player,"right",3);Player.image.src="images/piano_right.png";} 
+                if (GameArea.key_is_pressed && GameArea.key_is_pressed[65]){move(Player,"left",3);Player.image.src="images/piano_left.png";}
+                if (GameArea.key_is_pressed && GameArea.key_is_pressed[68]){move(Player,"right",3);Player.image.src="images/piano_right.png";} 
+                if (leftbutton.clicked()){move(Player,"left",3);Player.image.src="images/piano_left.png";}
+                if (rightbutton.clicked()){move(Player,"right",3);Player.image.src="images/piano_right.png";}
+                Player.newPosition(); 
+                Player.newShow();
+                // 產生器
+                GameArea.timer+=1;
+                if (GameArea.newscore<=5)
+                {
+                    if(GameArea.timer==1 || everytimer(200))
+                    {
+                        x=getRandom(30,600)
+                        y=getRandom(-50,-300)
+                        Gold.push(new object(30,30,"images/note1.png",x,y,"image"));
+                    }
+                    for (i = 0;i<Gold.length;i += 1)
+                    {
+                        Gold[i].y += 2;
+                        Gold[i].newShow();
+                    }
+                    if(GameArea.timer == 1 || everytimer(200))
+                    {
+                        x=getRandom(30,600)
+                        y=getRandom(-50,-300)
+                        Enemy.push(new object(30,30,"images/noteX1.png",x,y,"image"));
+                    }
+                    for (i = 0;i<Enemy.length;i +=1)
+                    {
+                        Enemy[i].y += 1;
+                        Enemy[i].newShow();
+                    }
+                }
+                else if (GameArea.newscore >5 && GameArea.newscore <=10)
+                {   
+                    if(GameArea.timer==1 || everytimer(200))
+                    {
+                        x=getRandom(30,600)
+                        y=getRandom(-50,-300)
+                        Gold.push(new object(30,30,"images/note1.png",x,y,"image"));
+                    }
+                    for (i = 0;i<Gold.length;i += 1)
+                    {
+                        Gold[i].y += 2;
+                        Gold[i].newShow();
+                    }
+                    if(GameArea.timer == 1 || everytimer(200))
+                    {
+                        x=getRandom(30,600)
+                        y=getRandom(-50,-300)
+                        Enemy.push(new object(30,30,"images/noteX1.png",x,y,"image"));
+                    }
+                    for (i = 0;i<Enemy.length;i +=1)
+                    {
+                        Enemy[i].y += 1;
+                        Enemy[i].newShow();
+                    }
+                    if(GameArea.timer==1 || everytimer(200))
+                    {
+                        x=getRandom(30,600)
+                        y=getRandom(-50,-300)
+                        Gold1.push(new object(30,30,"images/note2.png",x,y,"image"));
+                    }
+                    for (i = 0;i<Gold1.length;i += 1)
+                    {
+                        Gold1[i].y += 2;
+                        Gold1[i].newShow();
+                    }
+                    if(GameArea.timer == 1 || everytimer(200))
+                    {
+                        x=getRandom(30,600)
+                        y=getRandom(-50,-300)
+                        Enemy1.push(new object(30,30,"images/noteX2.png",x,y,"image"));
+                    }
+                    for (i = 0;i<Enemy1.length;i +=1)
+                    {
+                        Enemy1[i].y += 1;
+                        Enemy1[i].newShow();
+                    }
+                } 
+                else if (GameArea.newscore >10)
+                {   
+                    if(GameArea.timer==1 || everytimer(200))
+                    {
+                        x=getRandom(30,600)
+                        y=getRandom(-50,-300)
+                        Gold.push(new object(30,30,"images/note1.png",x,y,"image"));
+                    }
+                    for (i = 0;i<Gold.length;i += 1)
+                    {
+                        Gold[i].y += 2;
+                        Gold[i].newShow();
+                    }
+                    if(GameArea.timer == 1 || everytimer(200))
+                    {
+                        x=getRandom(30,600)
+                        y=getRandom(-50,-300)
+                        Enemy.push(new object(30,30,"images/noteX1.png",x,y,"image"));
+                    }
+                    for (i = 0;i<Enemy.length;i +=1)
+                    {
+                        Enemy[i].y += 1;
+                        Enemy[i].newShow();
+                    }
+                    if(GameArea.timer==1 || everytimer(200))
+                    {
+                        x=getRandom(30,600)
+                        y=getRandom(-50,-300)
+                        Gold1.push(new object(30,30,"images/note2.png",x,y,"image"));
+                    }
+                    for (i = 0;i<Gold1.length;i += 1)
+                    {
+                        Gold1[i].y += 2;
+                        Gold1[i].newShow();
+                    }
+                    if(GameArea.timer == 1 || everytimer(200))
+                    {
+                        x=getRandom(30,600)
+                        y=getRandom(-50,-300)
+                        Enemy1.push(new object(30,30,"images/noteX2.png",x,y,"image"));
+                    }
+                    for (i = 0;i<Enemy1.length;i +=1)
+                    {
+                        Enemy1[i].y += 1;
+                        Enemy1[i].newShow();
+                    }
+                    if(GameArea.timer==1 || everytimer(200))
+                    {
+                        x=getRandom(30,600)
+                        y=getRandom(-50,-300)
+                        Gold2.push(new object(30,30,"images/note3.png",x,y,"image"));
+                    }
+                    for (i = 0;i<Gold2.length;i += 1)
+                    {
+                        Gold2[i].y += 2;
+                        Gold2[i].newShow();
+                    }
+                    if(GameArea.timer == 1 || everytimer(200))
+                    {
+                        x=getRandom(30,600)
+                        y=getRandom(-50,-300)
+                        Enemy2.push(new object(30,30,"images/noteX3.png",x,y,"image"));
+                    }
+                    for (i = 0;i<Enemy2.length;i +=1)
+                    {
+                        Enemy2[i].y += 1;
+                        Enemy2[i].newShow();
+                    }
+                    if(GameArea.timer == 1 || everytimer(200))
+                    {
+                        x=getRandom(30,600)
+                        y=getRandom(-50,-300)
+                        Enemy3.push(new object(30,30,"images/noteX4.png",x,y,"image"));
+                    }
+                    for (i = 0;i<Enemy3.length;i +=1)
+                    {
+                        Enemy3[i].y += 1;
+                        Enemy3[i].newShow();
+                    }
+                }   
+                // 遊戲機制引用
+                border();
+                Score.text="SCORE:"+GameArea.newscore;
+                Score.newShow();
+            }
+        }
+        // 遊戲機制
+        function border()
+        {
+            if(Player.x <= 0)
+            {
+                Player.x = 0;
+            }
+            if(Player.x >=GameArea.canvas.width-Player.width)
+            {
+                Player.x=GameArea.canvas.width-Player.width
+            }
+            for (i=0;i<Gold.length;i+=1)
+            {
+                if(Gold[i].y>=350)
+                {
+                    Gold.splice(i,1);
+                }
+            }
+            for (i=0;i<Gold1.length;i+=1)
+            {
+                if(Gold1[i].y>=350)
+                {
+                    Gold1.splice(i,1);
+                }
+            }
+            for (i=0;i<Gold2.length;i+=1)
+            {
+                if(Gold2[i].y>=350)
+                {
+                    Gold2.splice(i,1);
+                }
+            }
+            for (i=0;i<Enemy.length;i+=1)
+            {
+                if(Enemy[i].y>=350)
+                {
+                    Enemy.splice(i,1);
+                }
+            }
+            for (i=0;i<Enemy1.length;i+=1)
+            {
+                if(Enemy1[i].y>=350)
+                {
+                    Enemy1.splice(i,1);
+                }
+            }
+            for (i=0;i<Enemy2.length;i+=1)
+            {
+                if(Enemy2[i].y>=350)
+                {
+                    Enemy2.splice(i,1);
+                }
+            }
+            if(GameArea.newscore <= 0)
+            {
+                GameArea.newscore = 0;
+            }
+        }
+</script>
+    
+</body>
+</html>
